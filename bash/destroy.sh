@@ -1,9 +1,11 @@
 #!/bin/bash
 
+TAG_NAME="aws-101-cli-vpc"
+
 echo "Destroying VPC resources..."
 
 vpc_id="$(aws ec2 describe-vpcs \
-    --filters Name=tag:Name,Values=aws-101-cli-vpc |
+    --filters Name=tag:Name,Values=$TAG_NAME |
     jq -r '.Vpcs[0].VpcId')"
 
 aws ec2 delete-vpc \
