@@ -11,6 +11,7 @@ vpc_id="$(aws ec2 create-vpc \
     jq -r '.Vpc.VpcId')"
 echo "VPC Id: $vpc_id"
 
+# TODO refactor to function of creating subnets
 subnet_1a_public1_id="$(aws ec2 create-subnet \
     --vpc-id "$vpc_id" \
     --cidr-block '10.1.0.0/28' \
@@ -21,6 +22,8 @@ subnet_1a_public1_id="$(aws ec2 create-subnet \
 echo "Subnet 1a public1 ID: $subnet_1a_public1_id"
 
 # TODO Create subnets
+# TODO Create Internet Gateways
+# TODO attach IGs to the public subnets
 # TODO Create route tables
 # TODO Create NAT Gateways
 
