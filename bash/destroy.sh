@@ -14,8 +14,9 @@ subnet_1a_id="$(aws ec2 describe-subnets \
 
 aws ec2 delete-subnet \
     --subnet-id "$subnet_1a_id"
+echo "Deleted Subnet: $subnet_1a_id!"
 
 aws ec2 delete-vpc \
     --vpc-id "$vpc_id"
 
-echo "Deleted VPC $vpc_id!"
+echo "Deleted VPC: $vpc_id!"
