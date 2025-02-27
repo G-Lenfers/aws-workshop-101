@@ -30,9 +30,13 @@ aws ec2 modify-vpc-attribute \
     --vpc-id "$vpc_id" \
     --enable-dns-hostnames '{"Value":true}'
 
-subnet_1a_public1_id="$(create_subnet 'public1')" && echo "Subnet 1a public1 ID: $subnet_1a_public1_id"
+# TODO Create S3 Endpoint
 
-# TODO Create subnets
+subnet_1a_public1_id="$(create_subnet 'public1')" && echo "Subnet 1a public1 ID: $subnet_1a_public1_id"
+subnet_1a_private1_id="$(create_subnet 'private1')" && echo "Subnet 1a private1 ID: $subnet_1a_private1_id"
+subnet_1b_public2_id="$(create_subnet 'public2')" && echo "Subnet 1b public2 ID: $subnet_1b_public2_id"
+subnet_1b_private2_id="$(create_subnet 'private2')" && echo "Subnet 1b private2 ID: $subnet_1b_private2_id"
+
 # TODO Create Internet Gateways
 # TODO attach IGs to the public subnets
 # TODO Create route tables
