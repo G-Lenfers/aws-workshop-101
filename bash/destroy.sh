@@ -22,7 +22,12 @@ vpc_id="$(aws ec2 describe-vpcs \
     jq -r '.Vpcs[0].VpcId')"
 
 destroy_subnet "public1"
+destroy_subnet "private1"
+destroy_subnet "public2"
+destroy_subnet "private2"
 
 aws ec2 delete-vpc \
     --vpc-id "$vpc_id"
 echo "Deleted VPC: $vpc_id!"
+
+echo "Successfully destroyed VPC resources!"
