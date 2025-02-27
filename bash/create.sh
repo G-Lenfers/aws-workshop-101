@@ -11,6 +11,14 @@ vpc_id="$(aws ec2 create-vpc \
     jq -r '.Vpc.VpcId')"
 echo "VPC Id: $vpc_id"
 
+aws ec2 modify-vpc-attribute \
+    --vpc-id "$vpc_id" \
+    --enable-dns-support '{"Value":true}'
+
+aws ec2 modify-vpc-attribute \
+    --vpc-id "$vpc_id" \
+    --enable-dns-hostnames '{"Value":true}'
+
 # TODO refactor to function of creating subnets
 subnet_1a_public1_id="$(aws ec2 create-subnet \
     --vpc-id "$vpc_id" \
@@ -18,7 +26,7 @@ subnet_1a_public1_id="$(aws ec2 create-subnet \
     --availability-zone 'us-east-1a' \
     --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$TAG_NAME-subnet-public1}]" \
     --output json |
-    jq -r '.Subnet.SubnetId')"  &&
+    jq -r '.Subnet.SubnetId')"
 echo "Subnet 1a public1 ID: $subnet_1a_public1_id"
 
 # TODO Create subnets
