@@ -21,7 +21,7 @@ vpc_id="$(aws ec2 create-vpc \
     --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=$TAG_NAME-vpc}]" \
     --output json |
     jq -r '.Vpc.VpcId')"
-echo "VPC Id: $vpc_id"
+echo "VPC ID: $vpc_id"
 
 aws ec2 modify-vpc-attribute \
     --vpc-id "$vpc_id" \
@@ -31,7 +31,14 @@ aws ec2 modify-vpc-attribute \
     --vpc-id "$vpc_id" \
     --enable-dns-hostnames '{"Value":true}'
 
-# TODO Create S3 Endpoint
+vpce_s3_id=$(aws ec2 create-vpc-endpoint \
+    --vpc-id "$vpc_id" \
+    --vpc-endpoint-type Gateway \
+    --service-name com.amazonaws.us-east-1.s3 \
+    --tag-specifications "ResourceType=vpc-endpoint,Tags=[{Key=Name,Value=$TAG_NAME-vpce-s3}]" | \
+    jq -r '.VpcEndpoint.VpcEndpointId')
+echo "VPC S3 endpoint ID: $vpce_s3_id"
+
 
 subnet_1a_public1_id="$(create_subnet 'public1' '10.1.0.0/28')" && echo "Subnet 1a public1 ID: $subnet_1a_public1_id"
 subnet_1a_private1_id="$(create_subnet 'private1' '10.1.0.16/28')" && echo "Subnet 1a private1 ID: $subnet_1a_private1_id"
