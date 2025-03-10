@@ -11,6 +11,16 @@ function create_vpc () {
         jq -r '.Vpc.VpcId'
 }
 
+function enable_vpc_dns () {
+    aws ec2 modify-vpc-attribute \
+        --vpc-id "$vpc_id" \
+        --enable-dns-support '{"Value":true}'
+
+    aws ec2 modify-vpc-attribute \
+        --vpc-id "$vpc_id" \
+        --enable-dns-hostnames '{"Value":true}'
+}
+
 function create_subnet () {
     _tag_name_complement=$1
     _vpc_id=$2
@@ -29,13 +39,7 @@ echo "Creating VPC resources..."
 vpc_id=$(create_vpc '10.1.0.0/24')
 echo "VPC ID: $vpc_id"
 
-aws ec2 modify-vpc-attribute \
-    --vpc-id "$vpc_id" \
-    --enable-dns-support '{"Value":true}'
-
-aws ec2 modify-vpc-attribute \
-    --vpc-id "$vpc_id" \
-    --enable-dns-hostnames '{"Value":true}'
+enable_vpc_dns
 
 vpce_s3_id=$(aws ec2 create-vpc-endpoint \
     --vpc-id "$vpc_id" \
