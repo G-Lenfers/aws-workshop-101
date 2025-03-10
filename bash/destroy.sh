@@ -2,6 +2,12 @@
 
 TAG_NAME="aws-101-cli"
 
+function get_vpc_id () {
+    aws ec2 describe-vpcs \
+        --filters Name=tag:Name,Values="$TAG_NAME-vpc" |
+        jq -r '.Vpcs[0].VpcId'
+}
+
 function delete_vpc_endpoints () {
     vpce_id=$(aws ec2 describe-vpc-endpoints | \
         jq -r '.VpcEndpoints[0].VpcEndpointId')  # TODO how about a for loop
@@ -16,11 +22,12 @@ function delete_vpc_endpoints () {
 }
 
 function delete_subnet () {
-    tag_name_complement=$1
+    _vpc_id=$1
+    _tag_name_complement=$2
     subnet_id="$(aws ec2 describe-subnets \
         --filters \
-            Name=vpc-id,Values="$vpc_id" \
-            Name=tag:Name,Values="$TAG_NAME-subnet-$tag_name_complement" \
+            Name=vpc-id,Values="$_vpc_id" \
+            Name=tag:Name,Values="$TAG_NAME-subnet-$_tag_name_complement" \
             Name=availability-zone,Values=us-east-1a |
         jq -r '.Subnets[0].SubnetId')"
     aws ec2 delete-subnet \
@@ -28,21 +35,25 @@ function delete_subnet () {
     echo "Deleted Subnet: $subnet_id"
 }
 
+function delete_vpc () {
+    _vpc_id=$1
+    aws ec2 delete-vpc \
+        --vpc-id "$_vpc_id"
+    echo "Deleted VPC: $_vpc_id!"
+}
+
+
 echo "Destroying VPC resources..."
 
-vpc_id="$(aws ec2 describe-vpcs \
-    --filters Name=tag:Name,Values="$TAG_NAME-vpc" |
-    jq -r '.Vpcs[0].VpcId')"
+vpc_id="$(get_vpc_id)"
 
 delete_vpc_endpoints
 
-#delete_subnet "public1"
-#delete_subnet "private1"
-#delete_subnet "public2"
-#delete_subnet "private2"
+delete_subnet "$vpc_id" "public1"
+delete_subnet "$vpc_id" "private1"
+delete_subnet "$vpc_id" "public2"
+delete_subnet "$vpc_id" "private2"
 
-aws ec2 delete-vpc \
-    --vpc-id "$vpc_id"
-echo "Deleted VPC: $vpc_id!"
+delete_vpc "$vpc_id"
 
 echo "Successfully destroyed VPC resources!"
