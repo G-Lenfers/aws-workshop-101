@@ -1,10 +1,11 @@
 #!/bin/bash
 
-TAG_NAME="aws-101-cli"
 REGION="us-east-1"
+TAG_NAME="aws-101-cli"
 
 function create_vpc () {
     _cidr_block=$1
+
     aws ec2 create-vpc \
         --cidr-block "$_cidr_block" \
         --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=$TAG_NAME-vpc}]" \
@@ -27,6 +28,7 @@ function create_vpc_endpoint () {
     _vpc_endpoint_type=$2
     _service_name=$3
     _tag_name_complement=$4
+
     aws ec2 create-vpc-endpoint \
         --vpc-id "$_vpc_id" \
         --vpc-endpoint-type "$_vpc_endpoint_type" \
@@ -40,6 +42,7 @@ function create_subnet () {
     _cidr_block=$2
     _availability_zone=$3
     _tag_name_complement=$4
+
     aws ec2 create-subnet \
         --vpc-id "$_vpc_id" \
         --cidr-block "$_cidr_block" \

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TAG_NAME="aws-101-cli"
 REGION="us-east-1"
+TAG_NAME="aws-101-cli"
 
 function get_vpc_id () {
     aws ec2 describe-vpcs \
@@ -26,6 +26,7 @@ function delete_subnet () {
     _vpc_id=$1
     _availability_zone=$2
     _tag_name_complement=$3
+
     subnet_id="$(aws ec2 describe-subnets \
         --filters \
             Name=vpc-id,Values="$_vpc_id" \
@@ -39,6 +40,7 @@ function delete_subnet () {
 
 function delete_vpc () {
     _vpc_id=$1
+
     aws ec2 delete-vpc \
         --vpc-id "$_vpc_id"
     echo "Deleted VPC: $_vpc_id!"
