@@ -2,25 +2,31 @@
 
 TAG_NAME="aws-101-cli"
 
+function create_vpc () {
+    _cidr_block=$1
+    aws ec2 create-vpc \
+        --cidr-block "$_cidr_block" \
+        --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=$TAG_NAME-vpc}]" \
+        --output json |
+        jq -r '.Vpc.VpcId'
+}
+
 function create_subnet () {
-    tag_name_complement=$1
-    cidr_block=$2
+    _tag_name_complement=$1
+    _vpc_id=$2
+    _cidr_block=$3
     aws ec2 create-subnet \
-        --vpc-id "$vpc_id" \
-        --cidr-block "$cidr_block" \
+        --vpc-id "$_vpc_id" \
+        --cidr-block "$_cidr_block" \
         --availability-zone 'us-east-1a' \
-        --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$TAG_NAME-subnet-$tag_name_complement}]" \
+        --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$TAG_NAME-subnet-$_tag_name_complement}]" \
         --output json |
         jq -r '.Subnet.SubnetId'
 }
 
 echo "Creating VPC resources..."
 
-vpc_id="$(aws ec2 create-vpc \
-    --cidr-block '10.1.0.0/24' \
-    --tag-specifications "ResourceType=vpc,Tags=[{Key=Name,Value=$TAG_NAME-vpc}]" \
-    --output json |
-    jq -r '.Vpc.VpcId')"
+vpc_id=$(create_vpc '10.1.0.0/24')
 echo "VPC ID: $vpc_id"
 
 aws ec2 modify-vpc-attribute \
